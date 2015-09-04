@@ -19,7 +19,7 @@ from fractions import Fraction
 
 from pysmt.walkers import TreeWalker
 from six.moves import cStringIO
-
+from pysmt.utils import quote
 
 class HRPrinter(TreeWalker):
     """Performs serialization of a formula in a human-readable way.
@@ -74,7 +74,7 @@ class HRPrinter(TreeWalker):
         self.write(")")
 
     def walk_symbol(self, formula):
-        self.write(formula.symbol_name())
+        self.write(quote(formula.symbol_name(), style='"'))
 
     def walk_plus(self, formula):
         self.write("(")
@@ -287,14 +287,16 @@ class HRPrinter(TreeWalker):
         self.write("%d)" % formula.bv_rotation_step())
 
     def walk_bv_zext(self, formula):
-        self.write("Zext(")
+        self.write("(")
         self.walk(formula.arg(0))
-        self.write(", %d)" % formula.bv_extend_step())
+        self.write(" ZEXT ")
+        self.write("%d)" % formula.bv_extend_step())
 
     def walk_bv_sext(self, formula):
-        self.write("Sext(")
+        self.write("(")
         self.walk(formula.arg(0))
-        self.write(", %d)" % formula.bv_extend_step())
+        self.write(" SEXT ")
+        self.write("%d)" % formula.bv_extend_step())
 
     def walk_bv_comp(self, formula):
         self.write("(")
